@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateOrCreate(@Valid @RequestBody User user) throws ValidationException {
+    public User updateOrCreate(@RequestBody @Valid User user) throws ValidationException {
         User userUpdated = userValidation(user);
         User userNew = users.get(user.getId());
         if (userNew != null) {
