@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -10,12 +11,14 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
+@Validated
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
     private int filmId = 0;
@@ -26,7 +29,7 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
+    public Film create(@RequestBody @Valid Film film) throws ValidationException {
         filmValidation(film);
         filmId += 1;
         film.setId(filmId);
@@ -36,7 +39,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateOrCreate(@Valid @RequestBody Film film) throws ValidationException {
+    public Film updateOrCreate(@RequestBody @Valid Film film) throws ValidationException {
         filmValidation(film);
         Film filmNew = films.get(film.getId());
         if (filmNew != null) {
@@ -59,6 +62,9 @@ public class FilmController {
         } else if (film.getDuration() < 0) {
             log.error("Длительность фильма не может быть отрицательной");
             throw new ValidationException("Длительность фильма не может быть отрицательной");
+        } else if (Objects.equals(film.getName(), "")) {
+            log.error("Название фильма не может быть пустым");
+            throw new ValidationException("Название фильма не может быть пустым");
         }
     }
 }
