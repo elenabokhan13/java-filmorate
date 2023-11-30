@@ -16,8 +16,8 @@ public class Film {
 
     private int id;
 
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "Название не может быть пустым")
+    @NotEmpty(message = "Название не может быть пустым")
     private String name;
     private String description;
     private LocalDate releaseDate;

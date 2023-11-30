@@ -13,14 +13,15 @@ import java.time.LocalDate;
 public class User {
     private int id;
 
-    @Email
-    @NotBlank
-    @NotEmpty
+    @Email(message = "Введите верный имейл")
+    @NotBlank(message = "Введите верный имейл")
+    @NotEmpty(message = "Введите верный имейл")
     private String email;
 
-    @NotBlank
-    @NotEmpty
+    @NotBlank(message = "Введите логин без пробелов")
+    @NotEmpty(message = "Введите логин без пробелов")
     private String login;
+
     private String name;
     private LocalDate birthday;
 }
