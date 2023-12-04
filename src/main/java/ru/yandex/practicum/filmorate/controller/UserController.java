@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -40,12 +41,11 @@ public class UserController {
     public User updateOrCreate(@RequestBody @Valid User user) throws ValidationException {
         User userUpdated = userValidation(user);
         User userNew = users.get(user.getId());
-        if (userNew != null) {
-            users.remove(userNew.getId());
-            users.put(userUpdated.getId(), userUpdated);
-        } else {
+        if (userNew == null) {
             throw new ValidationException("Данного пользователя не существует.");
         }
+        users.remove(userNew.getId());
+        users.put(userUpdated.getId(), userUpdated);
         log.info("Получен запрос к эндпоинту /users для обновления данных пользователя");
         return user;
     }
@@ -60,9 +60,7 @@ public class UserController {
                 throw new ValidationException("День рождения пользователя не может быть в будущем.");
             }
         }
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        } else if (user.getName().equals("")) {
+        if (StringUtils.isBlank(user.getName())) {
             user.setName(user.getLogin());
         }
         return user;
