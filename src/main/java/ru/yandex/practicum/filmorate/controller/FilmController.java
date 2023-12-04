@@ -21,7 +21,7 @@ import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
 @Validated
 public class FilmController {
 
-    public final static String START_RELEASE_DATE = "1895-12-28";
+    public static final String START_RELEASE_DATE = "1895-12-28";
     private final Map<Integer, Film> films = new HashMap<>();
     private int filmId = 0;
 
