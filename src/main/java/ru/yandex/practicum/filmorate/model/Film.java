@@ -11,10 +11,9 @@ import java.time.format.DateTimeFormatter;
 @Data
 @Builder
 public class Film {
-
     public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private int id;
+    private int likes;
 
     @NotBlank(message = "Название не может быть пустым")
     @NotEmpty(message = "Название не может быть пустым")

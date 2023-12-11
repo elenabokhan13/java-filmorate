@@ -5,9 +5,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -20,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
 
 @SpringBootTest
-@ContextConfiguration(classes = {UserController.class, ValidationAutoConfiguration.class})
 class UserControllerTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-    private final UserController userController = new UserController();
+    @Autowired
+    private UserController userController;
 
     @Test
     void userNullEmailValidation() throws ValidationException {
