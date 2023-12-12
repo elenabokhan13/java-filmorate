@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -12,14 +13,12 @@ import java.util.*;
 
 @Slf4j
 @Component
-@Data
 public class InMemoryUserStorage implements UserStorage {
-    private final Map<Integer, User> users = new HashMap<>();
+    private static final Map<Integer, User> users = new HashMap<>();
     private int userId = 0;
 
     @Override
     public Collection<User> getAll() {
-        log.info("Получен запрос к эндпоинту /users для получения данных всех пользователей");
         return users.values();
     }
 
@@ -31,23 +30,26 @@ public class InMemoryUserStorage implements UserStorage {
         userNew.setFilmsLiked(new HashSet<>());
         userNew.setFriends(new HashSet<>());
         users.put(userId, userNew);
-        log.info("Получен запрос к эндпоинту /users для добавления нового пользователя");
         return userNew;
     }
 
     @Override
-    public User updateOrCreate(User user) {
+    public User update(User user) {
         User userUpdated = userValidation(user);
         User userNew = users.get(user.getId());
         if (userNew == null) {
-            throw new NullPointerException("Данного пользователя не существует.");
+            throw new FilmOrUserNotRegistered("Данного пользователя не существует.");
         }
         users.remove(userNew.getId());
         userUpdated.setFilmsLiked(new HashSet<>());
         userUpdated.setFriends(new HashSet<>());
         users.put(userUpdated.getId(), userUpdated);
-        log.info("Получен запрос к эндпоинту /users для обновления данных пользователя");
         return user;
+    }
+
+    @Override
+    public Map<Integer, User> getUsers() {
+        return users;
     }
 
     @Override
@@ -59,7 +61,6 @@ public class InMemoryUserStorage implements UserStorage {
         for (Long id : usersList) {
             response.add(users.get(id.intValue()));
         }
-        log.info("Получен запрос к эндпоинту /users для обновления данных пользователей по ID");
         return response;
     }
 

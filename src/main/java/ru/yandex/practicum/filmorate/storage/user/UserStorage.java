@@ -14,7 +14,7 @@ public interface UserStorage {
 
     User create(User user);
 
-    User updateOrCreate(User user);
+    User update(User user);
 
     Map<Integer, User> getUsers();
 
