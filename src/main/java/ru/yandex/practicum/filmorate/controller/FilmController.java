@@ -2,77 +2,67 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-@Slf4j
 @Validated
+@Slf4j
 public class FilmController {
+    private final FilmService filmService;
 
-    public static final String START_RELEASE_DATE = "1895-12-28";
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int filmId = 0;
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public Collection<Film> getAll() {
-        return films.values();
+        log.info("Получен запрос к эндпоинту /films для получения списка всех фильмов.");
+        return filmService.getAll();
+    }
+
+    @GetMapping(value = "/{id}")
+    public Film findById(@PathVariable int id) {
+        log.info("Получен запрос к эндпоинту /films для получения фильма по id " + id);
+        return filmService.findById(id);
+    }
+
+    @GetMapping(value = "/popular")
+    public List<Film> getTopPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Получен запрос к эндпоинту /films для получения списка самых популярных " + count + " фильмов.");
+        return filmService.getTopPopularFilms(count);
     }
 
     @PostMapping
     public Film create(@RequestBody @Valid Film film) throws ValidationException {
-        filmValidation(film);
-        filmId += 1;
-        film.setId(filmId);
-        films.put(filmId, film);
         log.info("Получен запрос к эндпоинту /films для добавления нового фильма");
-        return film;
+        return filmService.create(film);
     }
 
     @PutMapping
-    public Film updateOrCreate(@RequestBody @Valid Film film) throws ValidationException {
-        filmValidation(film);
-        Film filmNew = films.get(film.getId());
-        if (filmNew == null) {
-            throw new ValidationException("Данный фильм еще не добавлен в базу.");
-        }
-        films.remove(filmNew.getId());
-        films.put(film.getId(), film);
+    public Film update(@RequestBody @Valid Film film) throws ValidationException {
         log.info("Получен запрос к эндпоинту /films для обновления фильма");
-        return film;
+        return filmService.update(film);
     }
 
-    private void filmValidation(Film film) throws ValidationException {
-        if (film.getDescription() != null) {
-            if (film.getDescription().length() > 200) {
-                log.error("Описание фильма не может больше 200 символов");
-                throw new ValidationException("Описание фильма не может больше 200 символов");
-            }
-        }
-        if (film.getReleaseDate() != null) {
-            if (film.getReleaseDate().isBefore(LocalDate.parse(START_RELEASE_DATE, FORMATTER))) {
-                log.error("Дата релиза фильма не может быть раньше 28.12.1895");
-                throw new ValidationException("Дата релиза фильма не может быть раньше START_RELEASE_DATE 28.12.1895");
-            }
-        }
-        if (film.getDuration() < 0) {
-            log.error("Длительность фильма не может быть отрицательной");
-            throw new ValidationException("Длительность фильма не может быть отрицательной");
-        }
-        if (Objects.equals(film.getName(), "")) {
-            log.error("Название фильма не может быть пустым");
-            throw new ValidationException("Название фильма не может быть пустым");
-        }
+    @PutMapping(value = "/{id}/like/{userId}")
+    public void likeFilm(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос к эндпоинту /films для добавления любимого фильма");
+        filmService.likeFilm(id, userId);
+    }
+
+    @DeleteMapping(value = "/{id}/like/{userId}")
+    public void dislikeFilm(@PathVariable int id, @PathVariable int userId) {
+        log.info("Получен запрос к эндпоинту /films для удаления любимого фильма");
+        filmService.dislikeFilm(id, userId);
     }
 }

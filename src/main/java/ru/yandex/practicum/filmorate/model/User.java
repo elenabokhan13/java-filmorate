@@ -7,11 +7,14 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
 public class User {
     private int id;
+    private Set<Long> friends;
+    private Set<Long> filmsLiked;
 
     @Email(message = "Введите верный имейл")
     @NotBlank(message = "Введите верный имейл")

@@ -5,9 +5,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,11 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
 
 @SpringBootTest
-@ContextConfiguration(classes = {FilmController.class, ValidationAutoConfiguration.class})
 class FilmControllerTest {
 
     private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-    private final FilmController filmController = new FilmController();
+    @Autowired
+    private FilmController filmController;
 
     @Test
     void filmNullNameValidation() {
@@ -113,6 +112,5 @@ class FilmControllerTest {
                 .build();
         assertNotNull(filmController.create(film));
     }
-
 }
 
