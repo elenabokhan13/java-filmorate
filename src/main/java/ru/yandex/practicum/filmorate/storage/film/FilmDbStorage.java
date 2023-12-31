@@ -102,8 +102,8 @@ public class FilmDbStorage implements FilmStorage {
         Map<Integer, Film> response = new HashMap<>();
         String sql = "select * from films";
         List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
-        for (Film film_current : films) {
-            response.put(film_current.getId(), film_current);
+        for (Film filmCurrent : films) {
+            response.put(filmCurrent.getId(), filmCurrent);
         }
         return response;
     }
@@ -145,20 +145,20 @@ public class FilmDbStorage implements FilmStorage {
 
     private Film makeFilm(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("film_id");
-        Integer rating_id = rs.getInt("rating_id");
+        Integer ratingId = rs.getInt("rating_id");
         Integer duration = rs.getInt("duration");
         String description = rs.getString("description");
         String name = rs.getString("name");
-        LocalDate release_date = rs.getDate("release_date").toLocalDate();
+        LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
 
         return Film.builder()
                 .id(id)
                 .name(name)
-                .releaseDate(release_date)
+                .releaseDate(releaseDate)
                 .description(description)
                 .duration(duration)
                 .likes(getLikes(id))
-                .mpa(getMpa(rating_id))
+                .mpa(getMpa(ratingId))
                 .genres(getGenres(id))
                 .build();
     }
