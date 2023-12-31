@@ -33,15 +33,10 @@ public class UserService {
         if (user == null || friend == null) {
             throw new FilmOrUserNotRegistered("Пользователь не найден");
         }
-        if (user.getFriends().contains((long) friend.getId())) {
+        if (user.getFriends().contains(friend.getId())) {
             throw new UnauthorizedCommand("Данные пользователи уже добавили друг друга в друзья.");
         }
-        Set<Long> currentUser = user.getFriends();
-        currentUser.add((long) friend.getId());
-        user.setFriends(currentUser);
-        Set<Long> currentFriend = friend.getFriends();
-        currentFriend.add((long) user.getId());
-        friend.setFriends(currentFriend);
+        userStorage.addFriend(user, friend);
     }
 
     public void deleteFriend(int id, int friendId) {
@@ -50,15 +45,10 @@ public class UserService {
         if (user == null || friend == null) {
             throw new FilmOrUserNotRegistered("Пользователь не найден");
         }
-        if (!user.getFriends().contains((long) friend.getId())) {
+        if (!user.getFriends().contains(friend.getId())) {
             throw new UnauthorizedCommand("Данные пользователи еще не добавили друг друга в друзья.");
         }
-        Set<Long> currentUser = user.getFriends();
-        currentUser.remove((long) friend.getId());
-        user.setFriends(currentUser);
-        Set<Long> currentFriend = friend.getFriends();
-        currentFriend.remove((long) user.getId());
-        friend.setFriends(currentFriend);
+        userStorage.deleteFriend(user, friend);
     }
 
     public List<User> getFriendsList(int id) {
@@ -69,17 +59,17 @@ public class UserService {
     public List<User> getMutualFriends(int id, int otherId) {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(otherId);
-        Set<Long> userCopy = new HashSet<Long>(user.getFriends());
+        Set<Integer> userCopy = new HashSet<>(user.getFriends());
         userCopy.retainAll(friend.getFriends());
         return userStorage.getUsersById(userCopy);
     }
 
     public Collection<User> getAll() {
-        return userStorage.getAll();
+        return userStorage.getUsers().values();
     }
 
     public User findById(int id) {
-        return userStorage.getAll().stream()
+        return userStorage.getUsers().values().stream()
                 .filter(x -> x.getId() == id)
                 .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Пользователь с таким id не " +
                         "зарегистрирован"));

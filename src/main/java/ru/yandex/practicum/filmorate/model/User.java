@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -13,8 +13,8 @@ import java.util.Set;
 @Builder
 public class User {
     private int id;
-    private Set<Long> friends;
-    private Set<Long> filmsLiked;
+    private Set<Integer> friends;
+    private Set<Integer> filmsLiked;
 
     @Email(message = "Введите верный имейл")
     @NotBlank(message = "Введите верный имейл")
