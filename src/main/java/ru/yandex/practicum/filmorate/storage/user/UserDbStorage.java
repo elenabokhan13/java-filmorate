@@ -73,8 +73,8 @@ public class UserDbStorage implements UserStorage {
         Map<Integer, User> response = new HashMap<>();
         String sql = "select * from users";
         List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
-        for (User user_current : users) {
-            response.put(user_current.getId(), user_current);
+        for (User userCurrent : users) {
+            response.put(userCurrent.getId(), userCurrent);
         }
         return response;
     }
@@ -85,9 +85,9 @@ public class UserDbStorage implements UserStorage {
         if (usersList.isEmpty()) {
             return response;
         }
-        for (Integer user_id : usersList) {
+        for (Integer userId : usersList) {
             response.add(getUsers().values().stream()
-                    .filter(x -> x.getId() == user_id)
+                    .filter(x -> x.getId() == userId)
                     .findFirst().get());
         }
         return response.stream().sorted(Comparator.comparingInt(User::getId)).collect(Collectors.toList());
