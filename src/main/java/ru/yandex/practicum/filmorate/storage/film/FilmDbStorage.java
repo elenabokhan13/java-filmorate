@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component("filmDbStorage")
 @Primary
@@ -124,7 +125,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Mpa> getAllMpa() {
         String sql = "select * from rating_list";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> getMpa(rs.getInt("rating_id")));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> getMpa(rs.getInt("rating_id"))).stream()
+                .sorted(Comparator.comparingInt(Mpa::getId)).collect(Collectors.toList());
     }
 
     @Override
@@ -135,7 +137,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Collection<Genre> getAllGenre() {
         String sql = "select * from genre_list";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> getGenre(rs.getInt("genre_id")));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> getGenre(rs.getInt("genre_id"))).stream()
+                .sorted(Comparator.comparingInt(Genre::getId)).collect(Collectors.toList());
     }
 
     @Override
