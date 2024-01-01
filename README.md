@@ -23,9 +23,13 @@ Link to Database scheme https://github.com/elenabokhan13/java-filmorate/blob/mai
     - RATING_NAME - number of a rating
 
   - GENRE_LIST contains;
-    - FILM_ID - foreign key, identifying the film id, type int
+    - GENRE_ID - primary key, identifying the genre id, type int
     - GENRE_NAME - name of a genre, type varchar. one movie can have several genres
 
+  - GENRE_FILM contains;
+    - FILM_ID - foreign key, identifying the film id, type int
+    - GENRE_ID - foreign key, identifying the genre id, type int. one movie can have several genres
+      
   - FRIENDS_LIST contains:
     - USER_ID - foreign key USER_ID to identify user
     - FRIEND_ID - foreign key USER_ID to identify friend. both lines reference the same user table
