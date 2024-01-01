@@ -116,30 +116,6 @@ class UserDbStorageTest {
         jdbcTemplate.update(sqlTen);
     }
 
-    @AfterAll
-    public void deleteAll() {
-        String sqlOne = "drop table users cascade";
-        jdbcTemplate.update(sqlOne);
-
-        String sqlTwo = "drop table films cascade";
-        jdbcTemplate.update(sqlTwo);
-
-        String sqlThree = "drop table friends_list cascade";
-        jdbcTemplate.update(sqlThree);
-
-        String sqlFour = "drop table genre_film cascade";
-        jdbcTemplate.update(sqlFour);
-
-        String sqlFive = "drop table films_liked_list cascade";
-        jdbcTemplate.update(sqlFive);
-
-        String sqlSix = "drop table rating_list cascade";
-        jdbcTemplate.update(sqlSix);
-
-        String sqlSeven = "drop table genre_list cascade";
-        jdbcTemplate.update(sqlSeven);
-    }
-
     @Test
     public void testFindUserById() {
         User savedUser = userStorage.getUsers().values().stream()
