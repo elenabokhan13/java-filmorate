@@ -24,7 +24,6 @@ import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FilmDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private User newUserOne;
@@ -120,30 +119,6 @@ class FilmDbStorageTest {
                 "    film_id INTEGER REFERENCES films(film_id) ON DELETE CASCADE\n" +
                 ");";
         jdbcTemplate.update(sqlTen);
-    }
-
-    @AfterAll
-    public void deleteAll() {
-        String sqlOne = "drop table users cascade";
-        jdbcTemplate.update(sqlOne);
-
-        String sqlTwo = "drop table films cascade";
-        jdbcTemplate.update(sqlTwo);
-
-        String sqlThree = "drop table friends_list cascade";
-        jdbcTemplate.update(sqlThree);
-
-        String sqlFour = "drop table genre_film cascade";
-        jdbcTemplate.update(sqlFour);
-
-        String sqlFive = "drop table films_liked_list cascade";
-        jdbcTemplate.update(sqlFive);
-
-        String sqlSix = "drop table rating_list cascade";
-        jdbcTemplate.update(sqlSix);
-
-        String sqlSeven = "drop table genre_list cascade";
-        jdbcTemplate.update(sqlSeven);
     }
 
     @Test
