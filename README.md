@@ -12,7 +12,6 @@ Link to Database scheme https://github.com/elenabokhan13/java-filmorate/blob/mai
 
   - FILMS contains:
     - FILM_ID - is a primary key, type int, used to set up a unique identifier
-    - LIKES - number of likes the movie has, type int
     - RATING_ID - a foreign key, type int, identifies the rating it of a movie, references to RATING_LIST table one-two-one
     - NAME - movie title, type varchar
     - DESCRIPTION - movie discription, no more than 200 symbols, type varchar
