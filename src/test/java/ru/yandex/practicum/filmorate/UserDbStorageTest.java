@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDbStorageTest {
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplateOne;
     private User newUserOne;
     private User newUserTwo;
     private UserDbStorage userStorage;
@@ -37,7 +37,7 @@ class UserDbStorageTest {
                 "    email varchar(50),\n" +
                 "    birthday date\n" +
                 ");";
-        jdbcTemplate.update(sql);
+        jdbcTemplateOne.update(sql);
 
         String sqlNew = "" +
                 "CREATE TABLE IF NOT EXISTS friends_list (\n" +
@@ -45,14 +45,7 @@ class UserDbStorageTest {
                 "    friend_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,\n" +
                 "    friendship_status varchar(11)\n" +
                 ");";
-        jdbcTemplate.update(sqlNew);
-
-        String sqlThree = "" +
-                "CREATE TABLE IF NOT EXISTS films_liked_list (\n" +
-                "    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,\n" +
-                "    film_id INTEGER REFERENCES films(film_id) ON DELETE CASCADE\n" +
-                ");";
-        jdbcTemplate.update(sqlThree);
+        jdbcTemplateOne.update(sqlNew);
 
         newUserOne = User.builder()
                 .id(1)
@@ -64,7 +57,7 @@ class UserDbStorageTest {
                 .friends(Set.of())
                 .build();
 
-        userStorage = new UserDbStorage(jdbcTemplate);
+        userStorage = new UserDbStorage(jdbcTemplateOne);
 
         userStorage.create(newUserOne);
 
@@ -84,13 +77,10 @@ class UserDbStorageTest {
     @AfterEach
     public void deleteUsers() {
         String sql = "drop table users cascade";
-        jdbcTemplate.update(sql);
+        jdbcTemplateOne.update(sql);
 
         String sqlNew = "drop table friends_list cascade";
-        jdbcTemplate.update(sqlNew);
-
-        String sqlThree = "drop table films_liked_list cascade";
-        jdbcTemplate.update(sqlThree);
+        jdbcTemplateOne.update(sqlNew);
     }
 
     @Test
@@ -99,7 +89,6 @@ class UserDbStorageTest {
                 .filter(x -> x.getId() == 1)
                 .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Пользователь с таким id не " +
                         "зарегистрирован"));
-        ;
 
         assertThat(savedUser).isEqualTo(newUserOne);
     }
