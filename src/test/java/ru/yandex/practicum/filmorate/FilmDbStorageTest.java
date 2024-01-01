@@ -90,6 +90,10 @@ class FilmDbStorageTest {
 
         String sqlTwo = "drop table films cascade";
         jdbcTemplate.update(sqlTwo);
+
+        String sqlThree = "delete from films_liked_list";
+        jdbcTemplate.update(sqlThree);
+
     }
 
     @Test

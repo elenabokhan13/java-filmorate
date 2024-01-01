@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDbStorageTest {
-    private final JdbcTemplate jdbcTemplateOne;
+    private final JdbcTemplate jdbcTemplate;
     private User newUserOne;
     private User newUserTwo;
     private UserDbStorage userStorage;
@@ -37,7 +37,7 @@ class UserDbStorageTest {
                 "    email varchar(50),\n" +
                 "    birthday date\n" +
                 ");";
-        jdbcTemplateOne.update(sql);
+        jdbcTemplate.update(sql);
 
         String sqlNew = "" +
                 "CREATE TABLE IF NOT EXISTS friends_list (\n" +
@@ -45,7 +45,7 @@ class UserDbStorageTest {
                 "    friend_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,\n" +
                 "    friendship_status varchar(11)\n" +
                 ");";
-        jdbcTemplateOne.update(sqlNew);
+        jdbcTemplate.update(sqlNew);
 
         newUserOne = User.builder()
                 .id(1)
@@ -57,7 +57,7 @@ class UserDbStorageTest {
                 .friends(Set.of())
                 .build();
 
-        userStorage = new UserDbStorage(jdbcTemplateOne);
+        userStorage = new UserDbStorage(jdbcTemplate);
 
         userStorage.create(newUserOne);
 
@@ -77,10 +77,10 @@ class UserDbStorageTest {
     @AfterEach
     public void deleteUsers() {
         String sql = "drop table users cascade";
-        jdbcTemplateOne.update(sql);
+        jdbcTemplate.update(sql);
 
         String sqlNew = "drop table friends_list cascade";
-        jdbcTemplateOne.update(sqlNew);
+        jdbcTemplate.update(sqlNew);
     }
 
     @Test
