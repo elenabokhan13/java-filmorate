@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserDbStorageTest {
     private final JdbcTemplate jdbcTemplate;
     private User newUserOne;
