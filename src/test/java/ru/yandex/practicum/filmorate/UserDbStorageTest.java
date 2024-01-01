@@ -47,13 +47,6 @@ class UserDbStorageTest {
                 ");";
         jdbcTemplate.update(sqlNew);
 
-        String sqlThree = "" +
-                "CREATE TABLE IF NOT EXISTS films_liked_list (\n" +
-                "    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,\n" +
-                "    film_id INTEGER REFERENCES films(film_id) ON DELETE CASCADE\n" +
-                ");";
-        jdbcTemplate.update(sqlThree);
-
         newUserOne = User.builder()
                 .id(1)
                 .email("user@email.ru")
@@ -88,9 +81,6 @@ class UserDbStorageTest {
 
         String sqlNew = "drop table friends_list cascade";
         jdbcTemplate.update(sqlNew);
-
-        String sqlThree = "drop table films_liked_list cascade";
-        jdbcTemplate.update(sqlThree);
     }
 
     @Test
