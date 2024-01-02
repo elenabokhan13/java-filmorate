@@ -53,10 +53,11 @@ public class UserDbStorage implements UserStorage {
                 "email = ?, login = ?, name = ?, birthday = ? " +
                 "where user_id = ?";
 
-        getUsers().values().stream()
-                .filter(x -> x.getId() == user.getId())
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Пользователь с таким id не " +
-                        "зарегистрирован"));
+        User userCurrent = getUsers().get(user.getId());
+        if (userCurrent == null) {
+            throw new FilmOrUserNotRegistered("Пользователь с таким id не " +
+                    "зарегистрирован");
+        }
         jdbcTemplate.update(sql,
                 user.getEmail(),
                 user.getLogin(),
@@ -86,9 +87,7 @@ public class UserDbStorage implements UserStorage {
             return response;
         }
         for (Integer userId : usersList) {
-            response.add(getUsers().values().stream()
-                    .filter(x -> x.getId() == userId)
-                    .findFirst().get());
+            response.add(getUsers().get(userId));
         }
         return response.stream().sorted(Comparator.comparingInt(User::getId)).collect(Collectors.toList());
     }

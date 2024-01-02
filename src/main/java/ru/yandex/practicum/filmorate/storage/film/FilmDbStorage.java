@@ -65,9 +65,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        getFilms().values().stream()
-                .filter(x -> x.getId() == film.getId())
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован"));
+        Film filmCurrent = getFilms().get(film.getId());
+        if (filmCurrent == null) {
+            throw new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован");
+        }
 
         String sql = "update films set " +
                 "rating_id = ?, name = ?, description = ?, release_date = ?, duration = ?" +

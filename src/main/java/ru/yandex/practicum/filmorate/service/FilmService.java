@@ -72,9 +72,11 @@ public class FilmService {
     }
 
     public Film findById(int id) {
-        return filmStorage.getFilms().values().stream()
-                .filter(x -> x.getId() == id)
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован"));
+        Film film = filmStorage.getFilms().get(id);
+        if (film == null) {
+            throw new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован");
+        }
+        return film;
     }
 
     public Film create(Film film) {

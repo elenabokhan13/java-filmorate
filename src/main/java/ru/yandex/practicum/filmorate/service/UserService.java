@@ -69,10 +69,12 @@ public class UserService {
     }
 
     public User findById(int id) {
-        return userStorage.getUsers().values().stream()
-                .filter(x -> x.getId() == id)
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Пользователь с таким id не " +
-                        "зарегистрирован"));
+        User user = userStorage.getUsers().get(id);
+        if (user == null) {
+            throw new FilmOrUserNotRegistered("Пользователь с таким id не " +
+                    "зарегистрирован");
+        }
+        return user;
     }
 
     public User create(User user) {
