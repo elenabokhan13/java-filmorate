@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.GenreNotFound;
+import ru.yandex.practicum.filmorate.exception.MpaNotFound;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
@@ -31,6 +33,18 @@ public class ExceptionHandlers {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse objectNotRegisteredException(final FilmOrUserNotRegistered e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse mpaNotRegisteredException(final MpaNotFound e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse genreNotRegisteredException(final GenreNotFound e) {
         return new ErrorResponse(e.getMessage());
     }
 }
