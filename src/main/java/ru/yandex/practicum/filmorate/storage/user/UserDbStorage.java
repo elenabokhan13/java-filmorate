@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -93,10 +92,7 @@ public class UserDbStorage implements UserStorage {
     public void addFriend(User user, User friend) {
         String sql = "insert into friends_list(user_id, friend_id, friendship_status) " +
                 "values (?, ?, ?)";
-        try {
-            jdbcTemplate.update(sql, user.getId(), friend.getId(), FRIENDSHIP);
-        } catch (DataAccessException e) {
-        }
+        jdbcTemplate.update(sql, user.getId(), friend.getId(), FRIENDSHIP);
     }
 
     @Override

@@ -55,6 +55,7 @@ public class FilmDbStorage implements FilmStorage {
                         film.getId(),
                         genre.getId());
             } catch (DataAccessException e) {
+                continue;
             }
         }
         return getFilms().get(film.getId());
@@ -90,6 +91,7 @@ public class FilmDbStorage implements FilmStorage {
                         film.getId(),
                         genre.getId());
             } catch (DataAccessException e) {
+                continue;
             }
         }
         return getFilms().get(film.getId());
@@ -110,11 +112,7 @@ public class FilmDbStorage implements FilmStorage {
     public void likeFilm(Film film, User user) {
         String sql = "insert into films_liked_list(user_id, film_id) " +
                 "values (?, ?)";
-        try {
-            jdbcTemplate.update(sql, user.getId(), film.getId());
-        } catch (DataAccessException e) {
-
-        }
+        jdbcTemplate.update(sql, user.getId(), film.getId());
     }
 
     @Override
