@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.persistence.Column;
-import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
