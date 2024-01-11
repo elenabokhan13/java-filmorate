@@ -1,12 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
-import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.Date;
@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.yandex.practicum.filmorate.model.User.FRIENDSHIP;
 
 @Component("userDbStorage")
 @Primary
@@ -42,9 +44,7 @@ public class UserDbStorage implements UserStorage {
         }, keyHolder);
 
         user.setId((int) Objects.requireNonNull(keyHolder.getKey()).longValue());
-        return getUsers().values().stream()
-                .filter(x -> x.getId() == user.getId())
-                .findFirst().get();
+        return getUsers().get(user.getId());
     }
 
     @Override
@@ -55,8 +55,7 @@ public class UserDbStorage implements UserStorage {
 
         User userCurrent = getUsers().get(user.getId());
         if (userCurrent == null) {
-            throw new FilmOrUserNotRegistered("Пользователь с таким id не " +
-                    "зарегистрирован");
+            throw new ObjectNotFound("Пользователь с id " + user.getId() + " не зарегистрирован");
         }
         jdbcTemplate.update(sql,
                 user.getEmail(),
@@ -64,9 +63,7 @@ public class UserDbStorage implements UserStorage {
                 user.getName(),
                 user.getBirthday(),
                 user.getId());
-        return getUsers().values().stream()
-                .filter(x -> x.getId() == user.getId())
-                .findFirst().get();
+        return getUsers().get(user.getId());
     }
 
     @Override
@@ -96,7 +93,10 @@ public class UserDbStorage implements UserStorage {
     public void addFriend(User user, User friend) {
         String sql = "insert into friends_list(user_id, friend_id, friendship_status) " +
                 "values (?, ?, ?)";
-        jdbcTemplate.update(sql, user.getId(), friend.getId(), Friendship.SENTREQUEST.toString());
+        try {
+            jdbcTemplate.update(sql, user.getId(), friend.getId(), FRIENDSHIP);
+        } catch (DataAccessException e) {
+        }
     }
 
     @Override

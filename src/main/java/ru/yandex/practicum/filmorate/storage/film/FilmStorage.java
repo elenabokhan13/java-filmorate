@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
@@ -19,11 +18,11 @@ public interface FilmStorage {
 
     public void dislikeFilm(Film film, User user);
 
-    public Collection<Mpa> getAllMpa();
+    public Collection<IdNameSet> getAllMpa();
 
-    public Mpa findMpaById(Integer id);
+    public IdNameSet findMpaById(Integer id);
 
-    public Collection<Genre> getAllGenre();
+    public Collection<IdNameSet> getAllGenre();
 
-    public Genre findGenreById(Integer id);
+    public IdNameSet findGenreById(Integer id);
 }

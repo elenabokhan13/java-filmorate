@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 
 @RestController
 @RequestMapping("/mpa")
-@Validated
 @Slf4j
 public class MpaController {
     private final FilmService filmService;
@@ -25,13 +24,13 @@ public class MpaController {
     }
 
     @GetMapping
-    public Collection<Mpa> getAll() {
+    public Collection<IdNameSet> getAll() {
         log.info("Получен запрос к эндпоинту /mpa для получения списка всех возрастных рейтингов.");
         return filmService.getAllMpa();
     }
 
     @GetMapping(value = "/{id}")
-    public Mpa findById(@PathVariable int id) {
+    public IdNameSet findById(@PathVariable int id) {
         log.info("Получен запрос к эндпоинту /mpa для получения рейтинга по id " + id);
         return filmService.findMpaById(id);
     }

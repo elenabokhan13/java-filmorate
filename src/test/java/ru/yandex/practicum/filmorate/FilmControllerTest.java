@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -101,7 +101,7 @@ class FilmControllerTest {
                 .description("New film")
                 .name("Name")
                 .id(3)
-                .mpa(Mpa.builder().id(1).build())
+                .mpa(IdNameSet.builder().id(1).build())
                 .build();
         assertThrows(NullPointerException.class, () -> filmController.create(film));
     }
@@ -112,7 +112,7 @@ class FilmControllerTest {
                 .name("Name")
                 .releaseDate(LocalDate.parse("2002-09-13", FORMATTER))
                 .id(3)
-                .mpa(Mpa.builder().id(1).build())
+                .mpa(IdNameSet.builder().id(1).build())
                 .build();
         assertNotNull(filmController.create(film));
     }

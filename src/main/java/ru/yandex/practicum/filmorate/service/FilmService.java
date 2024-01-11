@@ -4,12 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.exception.UnauthorizedCommand;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -39,11 +38,11 @@ public class FilmService {
         User user = userStorage.getUsers().get(userId);
         Film film = filmStorage.getFilms().get(id);
         if (user == null || film == null) {
-            throw new FilmOrUserNotRegistered("Получен незарегистрированный фильм или пользователь");
+            throw new ObjectNotFound("Получен незарегистрированный фильм или пользователь");
         }
         if (user.getFilmsLiked().contains(film.getId())) {
-            throw new UnauthorizedCommand("Пользователь уже залайкал данный фильм. Пользователь может поставить " +
-                    "фильму только один лайк.");
+            throw new UnauthorizedCommand("Пользователь с id " + userId + " уже залайкал фильм " + film.getName()
+                    + ". Пользователь может поставить фильму только один лайк.");
         }
         filmStorage.likeFilm(film, user);
     }
@@ -52,10 +51,10 @@ public class FilmService {
         User user = userStorage.getUsers().get(userId);
         Film film = filmStorage.getFilms().get(id);
         if (user == null || film == null) {
-            throw new FilmOrUserNotRegistered("Получен незарегистрированный фильм или пользователь");
+            throw new ObjectNotFound("Получен незарегистрированный фильм или пользователь");
         }
         if (!user.getFilmsLiked().contains(film.getId())) {
-            throw new UnauthorizedCommand("Пользователь еще не залайкал данный фильм.");
+            throw new UnauthorizedCommand("Пользователь с id " + userId + " еще не залайкал  фильм " + film.getName());
         }
         filmStorage.dislikeFilm(film, user);
     }
@@ -74,7 +73,7 @@ public class FilmService {
     public Film findById(int id) {
         Film film = filmStorage.getFilms().get(id);
         if (film == null) {
-            throw new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован");
+            throw new ObjectNotFound("Фильм с id " + id + " не зарегистрирован");
         }
         return film;
     }
@@ -89,19 +88,19 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Collection<Mpa> getAllMpa() {
+    public Collection<IdNameSet> getAllMpa() {
         return filmStorage.getAllMpa();
     }
 
-    public Mpa findMpaById(Integer id) {
+    public IdNameSet findMpaById(Integer id) {
         return filmStorage.findMpaById(id);
     }
 
-    public Collection<Genre> getAllGenre() {
+    public Collection<IdNameSet> getAllGenre() {
         return filmStorage.getAllGenre();
     }
 
-    public Genre findGenreById(Integer id) {
+    public IdNameSet findGenreById(Integer id) {
         return filmStorage.findGenreById(id);
     }
 

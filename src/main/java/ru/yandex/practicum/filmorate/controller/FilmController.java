@@ -50,19 +50,21 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody @Valid Film film) throws ValidationException {
-        log.info("Получен запрос к эндпоинту /films для обновления фильма");
+        log.info("Получен запрос к эндпоинту /films для обновления фильма " + film.getName());
         return filmService.update(film);
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
     public void likeFilm(@PathVariable int id, @PathVariable int userId) {
-        log.info("Получен запрос к эндпоинту /films для добавления любимого фильма");
+        log.info("Получен запрос к эндпоинту /films для добавления любимого фильма с id " + id + " пользователю с id "
+                + userId);
         filmService.likeFilm(id, userId);
     }
 
     @DeleteMapping(value = "/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable int id, @PathVariable int userId) {
-        log.info("Получен запрос к эндпоинту /films для удаления любимого фильма");
+        log.info("Получен запрос к эндпоинту /films для удаления любимого фильма с id " + id + " у пользователя с id "
+                + userId);
         filmService.dislikeFilm(id, userId);
     }
 }

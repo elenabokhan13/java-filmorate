@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -25,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User update(User user) {
         User userNew = users.get(user.getId());
         if (userNew == null) {
-            throw new FilmOrUserNotRegistered("Данного пользователя не существует.");
+            throw new ObjectNotFound("Пользователь с id " + user.getId() + " не зарегистрирован");
         }
         users.remove(userNew.getId());
         user.setFilmsLiked(new HashSet<>());

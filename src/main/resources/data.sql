@@ -1,32 +1,76 @@
 INSERT INTO rating_list (rating_name)
-VALUES ('G');
+SELECT ('G')
+WHERE
+    NOT EXISTS (
+    SELECT rating_name FROM rating_list WHERE rating_name = 'G'
+    );
 
 INSERT INTO rating_list (rating_name)
-VALUES ('PG');
+SELECT ('PG')
+WHERE
+    NOT EXISTS (
+    SELECT rating_name FROM rating_list WHERE rating_name = 'PG'
+    );
 
 INSERT INTO rating_list (rating_name)
-VALUES ('PG-13');
+SELECT ('PG-13')
+WHERE
+    NOT EXISTS (
+    SELECT rating_name FROM rating_list WHERE rating_name = 'PG-13'
+    );
 
 INSERT INTO rating_list (rating_name)
-VALUES ('R');
+SELECT ('R')
+WHERE
+    NOT EXISTS (
+    SELECT rating_name FROM rating_list WHERE rating_name = 'R'
+    );
 
 INSERT INTO rating_list (rating_name)
-VALUES ('NC-17');
+SELECT ('NC-17')
+WHERE
+    NOT EXISTS (
+    SELECT rating_name FROM rating_list WHERE rating_name = 'NC-17'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Комедия');
+SELECT ('Комедия')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Комедия'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Драма');
+SELECT ('Драма')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Драма'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Мультфильм');
+SELECT ('Мультфильм')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Мультфильм'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Триллер');
+SELECT ('Триллер')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Триллер'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Документальный');
+SELECT ('Документальный')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Документальный'
+    );
 
 INSERT INTO genre_list (genre_name)
-VALUES ('Боевик');
+SELECT ('Боевик')
+WHERE
+    NOT EXISTS (
+    SELECT genre_name FROM genre_list WHERE genre_name = 'Боевик'
+    );

@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.exception.UnauthorizedCommand;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -31,10 +31,11 @@ public class UserService {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(friendId);
         if (user == null || friend == null) {
-            throw new FilmOrUserNotRegistered("Пользователь не найден");
+            throw new ObjectNotFound("Пользователь не найден");
         }
         if (user.getFriends().contains(friend.getId())) {
-            throw new UnauthorizedCommand("Данные пользователи уже добавили друг друга в друзья.");
+            throw new UnauthorizedCommand("Пользователи с id " + id + " и " + friendId
+                    + " уже добавили друг друга в друзья.");
         }
         userStorage.addFriend(user, friend);
     }
@@ -43,10 +44,11 @@ public class UserService {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(friendId);
         if (user == null || friend == null) {
-            throw new FilmOrUserNotRegistered("Пользователь не найден");
+            throw new ObjectNotFound("Пользователь не найден");
         }
         if (!user.getFriends().contains(friend.getId())) {
-            throw new UnauthorizedCommand("Данные пользователи еще не добавили друг друга в друзья.");
+            throw new UnauthorizedCommand("Пользователи с id " + id + " и " + friendId
+                    + " еще не добавили друг друга в друзья.");
         }
         userStorage.deleteFriend(user, friend);
     }
@@ -71,8 +73,7 @@ public class UserService {
     public User findById(int id) {
         User user = userStorage.getUsers().get(id);
         if (user == null) {
-            throw new FilmOrUserNotRegistered("Пользователь с таким id не " +
-                    "зарегистрирован");
+            throw new ObjectNotFound("Пользователь с id " + id + " не зарегистрирован");
         }
         return user;
     }

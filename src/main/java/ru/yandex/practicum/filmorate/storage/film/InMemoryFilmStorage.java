@@ -1,12 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
-import ru.yandex.practicum.filmorate.exception.GenreNotFound;
-import ru.yandex.practicum.filmorate.exception.MpaNotFound;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -21,26 +18,21 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film create(Film film) {
         filmId += 1;
         film.setId(filmId);
-        if (film.getMpa() != null) {
-            film.setMpa(createMpaMap().get(film.getMpa().getId()));
-        }
-        if (film.getGenres() != null) {
-            List<Genre> response = new ArrayList<>();
-            Set<Integer> idSet = new HashSet<>();
-            for (Genre genre : film.getGenres()) {
-                int length = idSet.size();
-                idSet.add(genre.getId());
-                int newLength = idSet.size();
-                if (length == newLength) {
-                    continue;
-                }
-                Genre genreCurrent = createGenreMap().get(genre.getId());
-                response.add(genreCurrent);
+        film.setMpa(createMpaMap().get(film.getMpa().getId()));
+        List<IdNameSet> response = new ArrayList<>();
+        Set<Integer> idSet = new HashSet<>();
+        for (IdNameSet genre : film.getGenres()) {
+            int length = idSet.size();
+            idSet.add(genre.getId());
+            int newLength = idSet.size();
+            if (length == newLength) {
+                continue;
             }
-            film.setGenres(response);
-        } else {
-            film.setGenres(List.of());
+            IdNameSet genreCurrent = createGenreMap().get(genre.getId());
+            response.add(genreCurrent);
         }
+        film.setGenres(response);
+
         films.put(filmId, film);
         return film;
     }
@@ -49,29 +41,24 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film update(Film film) {
         Film filmNew = films.get(film.getId());
         if (filmNew == null) {
-            throw new FilmOrUserNotRegistered("Данный фильм еще не добавлен в базу.");
+            throw new ObjectNotFound("Фильм с id " + film.getId() + " не зарегистрирован");
         }
         films.remove(filmNew.getId());
-        if (film.getMpa() != null) {
-            film.setMpa(createMpaMap().get(film.getMpa().getId()));
-        }
-        if (film.getGenres() != null) {
-            List<Genre> response = new ArrayList<>();
-            Set<Integer> idSet = new HashSet<>();
-            for (Genre genre : film.getGenres()) {
-                int length = idSet.size();
-                idSet.add(genre.getId());
-                int newLength = idSet.size();
-                if (length == newLength) {
-                    continue;
-                }
-                Genre genreCurrent = createGenreMap().get(genre.getId());
-                response.add(genreCurrent);
+        film.setMpa(createMpaMap().get(film.getMpa().getId()));
+        List<IdNameSet> response = new ArrayList<>();
+        Set<Integer> idSet = new HashSet<>();
+        for (IdNameSet genre : film.getGenres()) {
+            int length = idSet.size();
+            idSet.add(genre.getId());
+            int newLength = idSet.size();
+            if (length == newLength) {
+                continue;
             }
-            film.setGenres(response);
-        } else {
-            film.setGenres(List.of());
+            IdNameSet genreCurrent = createGenreMap().get(genre.getId());
+            response.add(genreCurrent);
         }
+        film.setGenres(response);
+
         films.put(film.getId(), film);
         return film;
     }
@@ -98,34 +85,34 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Mpa> getAllMpa() {
+    public Collection<IdNameSet> getAllMpa() {
         return createMpaMap().values();
     }
 
     @Override
-    public Mpa findMpaById(Integer id) {
-        Mpa response = createMpaMap().get(id);
+    public IdNameSet findMpaById(Integer id) {
+        IdNameSet response = createMpaMap().get(id);
         if (response == null) {
-            throw new MpaNotFound("Mpa с данным id не найден.");
+            throw new ObjectNotFound("Mpa с id " + id + "не найден.");
         }
         return response;
     }
 
     @Override
-    public Collection<Genre> getAllGenre() {
+    public Collection<IdNameSet> getAllGenre() {
         return createGenreMap().values();
     }
 
     @Override
-    public Genre findGenreById(Integer id) {
-        Genre response = createGenreMap().get(id);
+    public IdNameSet findGenreById(Integer id) {
+        IdNameSet response = createGenreMap().get(id);
         if (response == null) {
-            throw new GenreNotFound("Данный жанр не найден.");
+            throw new ObjectNotFound("Жанр с id " + id + " не найден.");
         }
         return response;
     }
 
-    private Map<Integer, Mpa> createMpaMap() {
+    private Map<Integer, IdNameSet> createMpaMap() {
         List<String> mpas = new ArrayList<>();
         mpas.add("G");
         mpas.add("PG");
@@ -133,17 +120,17 @@ public class InMemoryFilmStorage implements FilmStorage {
         mpas.add("R");
         mpas.add("NC-17");
 
-        Map<Integer, Mpa> mpaList = new HashMap<>();
+        Map<Integer, IdNameSet> mpaList = new HashMap<>();
         int index = 1;
         for (String mpaNames : mpas) {
-            Mpa mpa = Mpa.builder().id(index).name(mpaNames).build();
+            IdNameSet mpa = IdNameSet.builder().id(index).name(mpaNames).build();
             mpaList.put(index, mpa);
             index += 1;
         }
         return mpaList;
     }
 
-    private Map<Integer, Genre> createGenreMap() {
+    private Map<Integer, IdNameSet> createGenreMap() {
         List<String> genres = new ArrayList<>();
         genres.add("Комедия");
         genres.add("Драма");
@@ -151,10 +138,10 @@ public class InMemoryFilmStorage implements FilmStorage {
         genres.add("Триллер");
         genres.add("Документальный");
         genres.add("Боевик");
-        Map<Integer, Genre> genreList = new HashMap<>();
+        Map<Integer, IdNameSet> genreList = new HashMap<>();
         int index = 1;
         for (String genreNames : genres) {
-            Genre genre = Genre.builder().id(index).name(genreNames).build();
+            IdNameSet genre = IdNameSet.builder().id(index).name(genreNames).build();
             genreList.put(index, genre);
             index += 1;
         }
