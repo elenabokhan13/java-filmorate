@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.exception.UnauthorizedCommand;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -31,34 +31,26 @@ public class UserService {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(friendId);
         if (user == null || friend == null) {
-            throw new FilmOrUserNotRegistered("Пользователь не найден");
+            throw new ObjectNotFound("Пользователь не найден");
         }
-        if (user.getFriends().contains((long) friend.getId())) {
-            throw new UnauthorizedCommand("Данные пользователи уже добавили друг друга в друзья.");
+        if (user.getFriends().contains(friend.getId())) {
+            throw new UnauthorizedCommand("Пользователи с id " + id + " и " + friendId
+                    + " уже добавили друг друга в друзья.");
         }
-        Set<Long> currentUser = user.getFriends();
-        currentUser.add((long) friend.getId());
-        user.setFriends(currentUser);
-        Set<Long> currentFriend = friend.getFriends();
-        currentFriend.add((long) user.getId());
-        friend.setFriends(currentFriend);
+        userStorage.addFriend(user, friend);
     }
 
     public void deleteFriend(int id, int friendId) {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(friendId);
         if (user == null || friend == null) {
-            throw new FilmOrUserNotRegistered("Пользователь не найден");
+            throw new ObjectNotFound("Пользователь не найден");
         }
-        if (!user.getFriends().contains((long) friend.getId())) {
-            throw new UnauthorizedCommand("Данные пользователи еще не добавили друг друга в друзья.");
+        if (!user.getFriends().contains(friend.getId())) {
+            throw new UnauthorizedCommand("Пользователи с id " + id + " и " + friendId
+                    + " еще не добавили друг друга в друзья.");
         }
-        Set<Long> currentUser = user.getFriends();
-        currentUser.remove((long) friend.getId());
-        user.setFriends(currentUser);
-        Set<Long> currentFriend = friend.getFriends();
-        currentFriend.remove((long) user.getId());
-        friend.setFriends(currentFriend);
+        userStorage.deleteFriend(user, friend);
     }
 
     public List<User> getFriendsList(int id) {
@@ -69,20 +61,21 @@ public class UserService {
     public List<User> getMutualFriends(int id, int otherId) {
         User user = userStorage.getUsers().get(id);
         User friend = userStorage.getUsers().get(otherId);
-        Set<Long> userCopy = new HashSet<Long>(user.getFriends());
+        Set<Integer> userCopy = new HashSet<>(user.getFriends());
         userCopy.retainAll(friend.getFriends());
         return userStorage.getUsersById(userCopy);
     }
 
     public Collection<User> getAll() {
-        return userStorage.getAll();
+        return userStorage.getUsers().values();
     }
 
     public User findById(int id) {
-        return userStorage.getAll().stream()
-                .filter(x -> x.getId() == id)
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Пользователь с таким id не " +
-                        "зарегистрирован"));
+        User user = userStorage.getUsers().get(id);
+        if (user == null) {
+            throw new ObjectNotFound("Пользователь с id " + id + " не зарегистрирован");
+        }
+        return user;
     }
 
     public User create(User user) {

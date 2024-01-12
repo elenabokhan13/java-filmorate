@@ -4,10 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.exception.UnauthorizedCommand;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -16,7 +17,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.model.Film.FORMATTER;
@@ -38,36 +38,29 @@ public class FilmService {
         User user = userStorage.getUsers().get(userId);
         Film film = filmStorage.getFilms().get(id);
         if (user == null || film == null) {
-            throw new FilmOrUserNotRegistered("Получен незарегистрированный фильм или пользователь");
+            throw new ObjectNotFound("Получен незарегистрированный фильм или пользователь");
         }
-        if (user.getFilmsLiked().contains((long) film.getId())) {
-            throw new UnauthorizedCommand("Пользователь уже залайкал данный фильм. Пользователь может поставить фильму " +
-                    "только один лайк.");
+        if (user.getFilmsLiked().contains(film.getId())) {
+            throw new UnauthorizedCommand("Пользователь с id " + userId + " уже залайкал фильм " + film.getName()
+                    + ". Пользователь может поставить фильму только один лайк.");
         }
-        Set<Long> currentUser = user.getFilmsLiked();
-        currentUser.add((long) film.getId());
-        user.setFilmsLiked(currentUser);
-        film.setLikes(film.getLikes() + 1);
-
+        filmStorage.likeFilm(film, user);
     }
 
     public void dislikeFilm(int id, int userId) {
         User user = userStorage.getUsers().get(userId);
         Film film = filmStorage.getFilms().get(id);
         if (user == null || film == null) {
-            throw new FilmOrUserNotRegistered("Получен незарегистрированный фильм или пользователь");
+            throw new ObjectNotFound("Получен незарегистрированный фильм или пользователь");
         }
-        if (!user.getFilmsLiked().contains((long) film.getId())) {
-            throw new UnauthorizedCommand("Пользователь еще не залайкал данный фильм.");
+        if (!user.getFilmsLiked().contains(film.getId())) {
+            throw new UnauthorizedCommand("Пользователь с id " + userId + " еще не залайкал  фильм " + film.getName());
         }
-        Set<Long> currentUser = user.getFilmsLiked();
-        currentUser.remove((long) film.getId());
-        user.setFilmsLiked(currentUser);
-        film.setLikes(film.getLikes() - 1);
+        filmStorage.dislikeFilm(film, user);
     }
 
     public Collection<Film> getAll() {
-        return filmStorage.getAll();
+        return filmStorage.getFilms().values();
     }
 
     public List<Film> getTopPopularFilms(int count) {
@@ -78,9 +71,11 @@ public class FilmService {
     }
 
     public Film findById(int id) {
-        return filmStorage.getAll().stream()
-                .filter(x -> x.getId() == id)
-                .findFirst().orElseThrow(() -> new FilmOrUserNotRegistered("Фильм с таким id не зарегистрирован"));
+        Film film = filmStorage.getFilms().get(id);
+        if (film == null) {
+            throw new ObjectNotFound("Фильм с id " + id + " не зарегистрирован");
+        }
+        return film;
     }
 
     public Film create(Film film) {
@@ -91,6 +86,22 @@ public class FilmService {
     public Film update(Film film) {
         filmValidation(film);
         return filmStorage.update(film);
+    }
+
+    public Collection<IdNameSet> getAllMpa() {
+        return filmStorage.getAllMpa();
+    }
+
+    public IdNameSet findMpaById(Integer id) {
+        return filmStorage.findMpaById(id);
+    }
+
+    public Collection<IdNameSet> getAllGenre() {
+        return filmStorage.getAllGenre();
+    }
+
+    public IdNameSet findGenreById(Integer id) {
+        return filmStorage.findGenreById(id);
     }
 
     private void filmValidation(Film film) throws ValidationException {

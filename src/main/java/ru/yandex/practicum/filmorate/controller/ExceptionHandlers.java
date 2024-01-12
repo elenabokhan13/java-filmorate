@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
@@ -18,7 +18,7 @@ public class ExceptionHandlers {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse objectNotFoundException(final NullPointerException e) {
+    public ErrorResponse objectIsNullException(final NullPointerException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -30,7 +30,7 @@ public class ExceptionHandlers {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse objectNotRegisteredException(final FilmOrUserNotRegistered e) {
+    public ErrorResponse objectNotFoundException(final ObjectNotFound e) {
         return new ErrorResponse(e.getMessage());
     }
 }

@@ -1,16 +1,18 @@
 
 package ru.yandex.practicum.filmorate;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.IdNameSet;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -99,8 +101,9 @@ class FilmControllerTest {
                 .description("New film")
                 .name("Name")
                 .id(3)
+                .mpa(IdNameSet.builder().id(1).build())
                 .build();
-        assertNotNull(filmController.create(film));
+        assertThrows(NullPointerException.class, () -> filmController.create(film));
     }
 
     @Test
@@ -109,6 +112,7 @@ class FilmControllerTest {
                 .name("Name")
                 .releaseDate(LocalDate.parse("2002-09-13", FORMATTER))
                 .id(3)
+                .mpa(IdNameSet.builder().id(1).build())
                 .build();
         assertNotNull(filmController.create(film));
     }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -9,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
 
@@ -50,19 +50,21 @@ public class FilmController {
 
     @PutMapping
     public Film update(@RequestBody @Valid Film film) throws ValidationException {
-        log.info("Получен запрос к эндпоинту /films для обновления фильма");
+        log.info("Получен запрос к эндпоинту /films для обновления фильма " + film.getName());
         return filmService.update(film);
     }
 
     @PutMapping(value = "/{id}/like/{userId}")
     public void likeFilm(@PathVariable int id, @PathVariable int userId) {
-        log.info("Получен запрос к эндпоинту /films для добавления любимого фильма");
+        log.info("Получен запрос к эндпоинту /films для добавления любимого фильма с id " + id + " пользователю с id "
+                + userId);
         filmService.likeFilm(id, userId);
     }
 
     @DeleteMapping(value = "/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable int id, @PathVariable int userId) {
-        log.info("Получен запрос к эндпоинту /films для удаления любимого фильма");
+        log.info("Получен запрос к эндпоинту /films для удаления любимого фильма с id " + id + " у пользователя с id "
+                + userId);
         filmService.dislikeFilm(id, userId);
     }
 }

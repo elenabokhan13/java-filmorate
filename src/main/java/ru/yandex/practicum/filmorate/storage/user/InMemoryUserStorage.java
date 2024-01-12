@@ -1,20 +1,15 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmOrUserNotRegistered;
+import ru.yandex.practicum.filmorate.exception.ObjectNotFound;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
-@Component
+@Component("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private static int userId = 0;
-
-    @Override
-    public Collection<User> getAll() {
-        return users.values();
-    }
 
     @Override
     public User create(User user) {
@@ -30,7 +25,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User update(User user) {
         User userNew = users.get(user.getId());
         if (userNew == null) {
-            throw new FilmOrUserNotRegistered("Данного пользователя не существует.");
+            throw new ObjectNotFound("Пользователь с id " + user.getId() + " не зарегистрирован");
         }
         users.remove(userNew.getId());
         user.setFilmsLiked(new HashSet<>());
@@ -45,14 +40,28 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUsersById(Set<Long> usersList) {
+    public List<User> getUsersById(Set<Integer> usersList) {
         List<User> response = new ArrayList<>();
         if (usersList.isEmpty()) {
             return response;
         }
-        for (Long id : usersList) {
-            response.add(users.get(id.intValue()));
+        for (Integer id : usersList) {
+            response.add(users.get(id));
         }
         return response;
+    }
+
+    @Override
+    public void addFriend(User user, User friend) {
+        Set<Integer> currentUser = user.getFriends();
+        currentUser.add(friend.getId());
+        user.setFriends(currentUser);
+    }
+
+    @Override
+    public void deleteFriend(User user, User friend) {
+        Set<Integer> currentUser = user.getFriends();
+        currentUser.remove(friend.getId());
+        user.setFriends(currentUser);
     }
 }
